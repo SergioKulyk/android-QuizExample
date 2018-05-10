@@ -16,10 +16,15 @@
 
 package com.udacity.example.quizexample;
 
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+
+import com.udacity.example.droidtermsprovider.DroidTermsExampleContract;
 
 /**
  * Gets the data from the ContentProvider and shows a series of flash cards.
@@ -29,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
     // The current state of the app
     private int mCurrentState;
+
+    private Cursor mDate;
 
     private Button mButton;
 
@@ -48,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Get the views
         mButton = (Button) findViewById(R.id.button_next);
+
+        new WordFetchTask().execute();
     }
 
     /**
@@ -85,5 +94,25 @@ public class MainActivity extends AppCompatActivity {
 
         mCurrentState = STATE_SHOWN;
 
+    }
+
+    private class WordFetchTask extends AsyncTask<Void, Void, Cursor> {
+
+        @Override
+        protected Cursor doInBackground(Void... voids) {
+            Uri uri = DroidTermsExampleContract.CONTENT_URI;
+            return getContentResolver().query(uri,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null);
+        }
+
+        @Override
+        protected void onPostExecute(Cursor cursor) {
+            super.onPostExecute(cursor);
+            mDate = cursor;
+        }
     }
 }
